@@ -116,14 +116,11 @@ export function Billing() {
         </FormNotice>
       )}
 
-      <Card title="Route credit" description="Prepaid credit, shared by every Route key. It doesn't expire or reset.">
+      <Card title="Route credit">
         {balance.error ? (
           <ErrorNote>{balance.error}</ErrorNote>
         ) : (
           <StatRow>
-            {/* Local currency is the figure, dollars the footnote. The whole
-                premise of the product is quoting people in their own money,
-                so the number they read first is the one in it. */}
             <Stat
               label="Available"
               value={
@@ -136,7 +133,7 @@ export function Billing() {
               note={balance.data && !quotedInUsd ? `${formatUsd(balance.data.availableUsd)}` : undefined}
             />
             <Stat
-              label="Spent so far"
+              label="Spent"
               value={
                 balance.data
                   ? quotedInUsd
@@ -155,15 +152,12 @@ export function Billing() {
                     : formatCurrency(balance.data.maxBudgetLocal, localCurrency!)
                   : '—'
               }
-              note="Lifetime total"
             />
           </StatRow>
         )}
 
         {balance.data && quotedInUsd && user?.country && (
           <p className={styles.rateNote}>
-            {/* Honest about the gap rather than silently labelling dollars
-                with the user's own currency. */}
             No exchange rate is available for your country&apos;s currency, so amounts are shown in
             US dollars.
           </p>
@@ -174,15 +168,12 @@ export function Billing() {
 
       <BalanceAlert />
 
-      <Card
-        title="Payment history"
-        description="Credit is added when a payment confirms. Check a pending one if it's taking a while."
-      >
+      <Card title="Payment history">
         {error && <ErrorNote>{error}</ErrorNote>}
         {checkNote && <FormNotice>{checkNote}</FormNotice>}
-        {payments === null && !error && <Pending label="Loading your payments…" />}
+        {payments === null && !error && <Pending label="Loading payments…" />}
         {payments !== null && payments.length === 0 && (
-          <Empty>No payments yet. Add credit above and every top-up is listed here.</Empty>
+          <Empty>No payments yet.</Empty>
         )}
 
         {payments !== null && payments.length > 0 && (

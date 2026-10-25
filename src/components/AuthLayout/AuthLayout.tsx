@@ -4,8 +4,7 @@ import styles from './AuthLayout.module.scss';
 
 interface AuthLayoutProps {
   title: string;
-  /** One line under the title. Says what this page does, not what Rovie is. */
-  subtitle: string;
+  subtitle?: string;
   children: ReactNode;
   /** The "no account yet?" / "already have one?" line at the foot of the column. */
   footer?: ReactNode;
@@ -29,7 +28,7 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
         <div className={styles.column}>
           <header className={styles.heading}>
             <h1 className={styles.title}>{title}</h1>
-            <p className={styles.subtitle}>{subtitle}</p>
+            {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
           </header>
 
           {children}

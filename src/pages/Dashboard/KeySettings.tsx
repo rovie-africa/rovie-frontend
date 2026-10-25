@@ -67,7 +67,7 @@ export function KeySettings({
             checked={capEnabled}
             onChange={(event) => setCapEnabled(event.target.checked)}
           />
-          <span>Stop this key after a set amount</span>
+          <span>Spend cap</span>
         </label>
         {capEnabled && (
           <div className={styles.capRow}>
@@ -79,20 +79,15 @@ export function KeySettings({
               min={1}
               step={1}
               onChange={(event) => setCap(event.target.value)}
+              placeholder="Total USD"
               aria-label="Spend cap in US dollars"
             />
-            <span className={styles.note}>Lifetime, not per month.</span>
           </div>
         )}
       </fieldset>
 
       <fieldset className={styles.group}>
         <legend className={styles.legend}>Models</legend>
-        <p className={styles.note}>
-          {selected.length === 0
-            ? 'This key can call every model.'
-            : `This key can call ${selected.length} of ${servedModels.length} models.`}
-        </p>
         <div className={styles.models}>
           {servedModels.map((model) => (
             <label key={model} className={styles.model}>

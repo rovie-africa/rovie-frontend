@@ -50,14 +50,14 @@ export function BalanceAlert() {
   }
 
   return (
-    <Card title="Low balance email" description="We'll email you once each time your credit falls this low.">
+    <Card title="Low balance alert">
       <label className={styles.toggle}>
         <input
           type="checkbox"
           checked={enabled}
           onChange={(event) => setEnabled(event.target.checked)}
         />
-        <span>Email me before I run out</span>
+        <span>Notify when credit falls below</span>
       </label>
 
       {enabled && (

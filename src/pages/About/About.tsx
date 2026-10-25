@@ -26,7 +26,7 @@ const BUILT = [
   },
   {
     title: 'A balance, not a card',
-    body: 'Top up by bank transfer or stablecoin, and calls draw the balance down. At zero they stop. Nothing overdrafts, nothing renews, nothing is charged to a card on file.',
+    body: 'Top up in your local currency, and calls draw the balance down. At zero they stop. Nothing overdrafts, nothing renews, nothing is charged to a card on file.',
   },
 ];
 
@@ -36,7 +36,6 @@ export function About() {
       {/* Centred, like the homepage hero - the alignment changes further down,
           where the page stops making a claim and starts explaining one. */}
       <header className={styles.head}>
-        <span className={styles.eyebrow}>About</span>
         <h1 className={styles.display}>Why Rovie exists</h1>
         <p className={styles.thesis}>
           We think the next generation of AI gets built everywhere. Rovie exists so that where you

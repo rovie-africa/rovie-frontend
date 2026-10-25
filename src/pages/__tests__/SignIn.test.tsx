@@ -71,17 +71,13 @@ describe('SignIn page', () => {
     expect(
       await screen.findByRole('img', { name: 'Map of Africa with Nigeria marked' })
     ).toBeInTheDocument();
-    expect(screen.getByText('Nigeria')).toBeInTheDocument();
-    // The caption states the consequence, not the picture.
-    expect(screen.getByText('NGN')).toBeInTheDocument();
   });
 
-  it('falls back to neutral copy when the country cannot be detected', async () => {
+  it('draws map of Africa when country cannot be detected', async () => {
     detectVisitorCountry.mockRejectedValue(new Error('blocked'));
     renderSignIn();
 
-    expect(await screen.findByText(/Frontier AI, priced for Africa/)).toBeInTheDocument();
-    expect(screen.getByRole('img', { name: 'Map of Africa' })).toBeInTheDocument();
+    expect(await screen.findByRole('img', { name: 'Map of Africa' })).toBeInTheDocument();
   });
 
   it('signs in with email and password', async () => {

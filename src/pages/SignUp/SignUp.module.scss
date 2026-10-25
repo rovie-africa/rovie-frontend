@@ -19,10 +19,26 @@
   gap: v.$space-2;
 }
 
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .label {
   font-size: v.$font-size-sm;
   font-weight: v.$font-weight-medium;
   color: v.$color-text;
+}
+
+.currencyTag {
+  font-family: v.$font-family-mono;
+  font-size: v.$font-size-xs;
+  color: v.$color-accent;
+  background-color: color-mix(in srgb, v.$color-accent 10%, transparent);
+  border: 1px solid color-mix(in srgb, v.$color-accent 25%, transparent);
+  border-radius: v.$radius-sm;
+  padding: 1px 6px;
 }
 
 // Matches AuthForm's .input rather than sharing it: a <select> needs its own

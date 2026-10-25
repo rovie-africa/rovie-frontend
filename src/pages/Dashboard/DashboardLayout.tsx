@@ -17,20 +17,16 @@ export function DashboardLayout() {
     <div className={styles.dashboard}>
       <div className={styles.inner}>
         <header className={styles.header}>
-          <p className={styles.eyebrow}>
-            Rovie Route · Signed in as {user?.email ?? user?.name ?? 'your account'}
-          </p>
-          <h1 className={styles.title}>{user?.name ? `Hello, ${user.name}` : 'Rovie Route dashboard'}</h1>
+          <div className={styles.headerTitleRow}>
+            <h1 className={styles.title}>{user?.name ? `Hello, ${user.name}` : 'Dashboard'}</h1>
+            {user?.email && <span className={styles.userBadge}>{user.email}</span>}
+          </div>
         </header>
 
-        {/* Google and magic-link signups arrive with no country, and a key
-            can't be issued without one. Persistent across every section
-            rather than shown once, because it blocks the main thing the
-            dashboard is for. */}
         {needsCountry && (
           <p className={styles.banner} role="status">
-            Set your country before creating an API key — it decides the currency you&apos;re billed
-            in. <NavLink to="/dashboard/account">Set it now</NavLink>
+            Set your country to create API keys and view local rates.{' '}
+            <NavLink to="/dashboard/account">Set country</NavLink>
           </p>
         )}
 

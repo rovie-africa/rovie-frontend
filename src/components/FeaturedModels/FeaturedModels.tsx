@@ -26,14 +26,8 @@ export function FeaturedModels({
   return (
     <section className={styles.featured} aria-labelledby="featured-models-heading">
       <div className={styles.head}>
-        <span className={styles.eyebrow}>Models on Rovie</span>
         <h2 id="featured-models-heading">The most {referencePriceText} can buy</h2>
-        {/* The heading carries the amount, so this doesn't repeat it - it says
-            what the list is and where the numbers come from. */}
-        <p>
-          One current model from each family, newest first. Rovie routes these models today while
-          we build more of the AI stack for Africa.
-        </p>
+        <p>One current model from each family, newest first.</p>
       </div>
 
       {error && (
@@ -86,12 +80,6 @@ export function FeaturedModels({
               );
             })}
           </ul>
-
-          <p className={styles.caption}>
-            Each rule ranks how far {referencePriceText} reaches on that model. The spread across
-            the catalog runs to roughly 40×, so the rules are spaced to stay readable — the token
-            counts beside them are the exact figures.
-          </p>
 
           <Link className={styles.catalogLink} to="/models">
             See all models

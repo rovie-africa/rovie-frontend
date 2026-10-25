@@ -25,10 +25,24 @@
   min-width: 0;
 }
 
+.labelRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: v.$space-2;
+}
+
 .label {
   font-size: v.$font-size-sm;
   font-weight: v.$font-weight-medium;
   color: v.$color-text;
+}
+
+.limits {
+  font-size: v.$font-size-xs;
+  color: v.$color-text-muted;
+  font-variant-numeric: tabular-nums;
 }
 
 .input,
@@ -100,24 +114,21 @@
 }
 
 .quote {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin: 0;
   padding: v.$space-3 v.$space-4;
   border: 1px solid color-mix(in srgb, v.$color-success 35%, transparent);
   border-radius: v.$radius-md;
   background-color: color-mix(in srgb, v.$color-success 7%, transparent);
   font-size: v.$font-size-sm;
-  line-height: 1.5;
   color: v.$color-text;
 
   strong {
+    font-size: v.$font-size-base;
     font-variant-numeric: tabular-nums;
   }
-}
-
-.quoteNote {
-  display: block;
-  margin-top: v.$space-1;
-  color: v.$color-text-muted;
 }
 
 .quoteError {
@@ -127,7 +138,6 @@
 }
 
 .note,
-.rail,
 .blocked {
   margin: 0;
   font-size: v.$font-size-sm;
@@ -140,62 +150,3 @@
   }
 }
 
-// Two radio cards rather than a select: there are exactly two options, the
-// difference between them matters, and each needs a line of explanation that
-// a <select> has nowhere to put.
-.methods {
-  margin: 0;
-  padding: 0;
-  border: none;
-  display: grid;
-  gap: v.$space-2;
-
-  @include m.respond-to('sm') {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-.method {
-  display: flex;
-  align-items: flex-start;
-  gap: v.$space-3;
-  padding: v.$space-3 v.$space-4;
-  border: 1px solid v.$color-border;
-  border-radius: v.$radius-md;
-  cursor: pointer;
-
-  &:hover {
-    background-color: v.$color-surface;
-  }
-
-  input {
-    margin-top: 3px;
-    flex: none;
-    accent-color: v.$color-primary;
-  }
-
-  strong {
-    display: block;
-    font-size: v.$font-size-sm;
-    color: v.$color-text;
-  }
-
-  // Focus lands on the input, so the ring goes on the card around it.
-  &:has(input:focus-visible) {
-    outline: 2px solid v.$color-primary;
-    outline-offset: 2px;
-  }
-}
-
-.methodActive {
-  composes: method;
-  border-color: v.$color-primary;
-  background-color: color-mix(in srgb, v.$color-primary 7%, transparent);
-}
-
-.methodNote {
-  display: block;
-  margin-top: 2px;
-  font-size: v.$font-size-sm;
-  color: v.$color-text-muted;
-}

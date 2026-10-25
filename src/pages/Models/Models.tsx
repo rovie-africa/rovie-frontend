@@ -48,10 +48,6 @@ export function Models() {
     <main className={`containerWide ${styles.page}`}>
       <header className={styles.head}>
         <h1>Models &amp; pricing</h1>
-        <p className={styles.intro}>
-          Every model available through your Rovie API key, pulled live from our catalog. Prices are
-          per million tokens, converted from USD at today&apos;s rate.
-        </p>
         <CountrySelect
           value={alpha2}
           onChange={selectCountry}

@@ -36,12 +36,12 @@ export function RevealedKey({ apiKey, onDismiss }: { apiKey: string; onDismiss: 
 
   return (
     <section className={styles.panel} aria-labelledby="revealed-key-heading">
-      <h2 className={styles.heading} id="revealed-key-heading" tabIndex={-1} ref={headingRef}>
-        Copy your key now
-      </h2>
-      <p className={styles.body}>
-        This is the only time it will be shown. If you lose it, revoke it and create another.
-      </p>
+      <div className={styles.headingRow}>
+        <h2 className={styles.heading} id="revealed-key-heading" tabIndex={-1} ref={headingRef}>
+          Copy your key now
+        </h2>
+        <span className={styles.onceBadge}>Shown once</span>
+      </div>
 
       <div className={styles.keyRow}>
         {/* readOnly input rather than a <code> block: it gives select-all on

@@ -47,9 +47,7 @@ export function Activity() {
 
       {data !== null && data.length === 0 && (
         <Empty>
-          {onlyFailures
-            ? 'No failed requests. Nothing to fix.'
-            : 'No requests yet. Point a client at the gateway and calls appear here within seconds.'}
+          {onlyFailures ? 'No failed requests.' : 'No requests yet.'}
         </Empty>
       )}
 

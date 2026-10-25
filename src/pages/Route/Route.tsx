@@ -43,7 +43,6 @@ export function RouteProduct() {
   return (
     <main>
       <header className={styles.hero}>
-        <span className={styles.eyebrow}>A Rovie product</span>
         <h1>Rovie Route</h1>
         <p>
           The infrastructure that gives African builders one reliable way to reach leading AI models.

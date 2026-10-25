@@ -136,10 +136,7 @@ export function ApiKeys() {
     <>
       {revealed && <RevealedKey apiKey={revealed} onDismiss={() => setRevealed(null)} />}
 
-      <Card
-        title="Create a Route API key"
-        description="Every Route key spends from the same credit balance. Revoking one doesn't strand credit."
-      >
+      <Card title="Create API key">
         <form className={styles.createForm} onSubmit={handleCreate}>
           <label className={styles.labelField}>
             <span className={styles.labelText}>Label</span>
@@ -148,7 +145,7 @@ export function ApiKeys() {
               className={styles.input}
               value={label}
               onChange={(event) => setLabel(event.target.value)}
-              placeholder="Laptop, CI, side project…"
+              placeholder="Laptop, CI, production…"
               maxLength={60}
               disabled={creating || needsCountry}
             />
@@ -160,22 +157,19 @@ export function ApiKeys() {
 
         {needsCountry && (
           <p className={styles.blocked}>
-            Set your country first — it decides the currency your balance is quoted in.{' '}
-            <Link to="/dashboard/account">Set it now</Link>
+            Set your country first to enable keys.{' '}
+            <Link to="/dashboard/account">Set country</Link>
           </p>
         )}
 
         {error && <ErrorNote>{error}</ErrorNote>}
       </Card>
 
-      <Card title="Your Route API keys" description="Spend shown covers the last 30 days.">
-        {keys === null && !error && <Pending label="Loading your keys…" />}
+      <Card title="API keys">
+        {keys === null && !error && <Pending label="Loading keys…" />}
 
         {keys !== null && active.length === 0 && revoked.length === 0 && (
-          <Empty>
-            No keys yet. Create one above, then paste it into OpenCode, Continue, Cline or any
-            OpenAI-compatible client.
-          </Empty>
+          <Empty>No keys yet.</Empty>
         )}
 
         {(active.length > 0 || revoked.length > 0) && (

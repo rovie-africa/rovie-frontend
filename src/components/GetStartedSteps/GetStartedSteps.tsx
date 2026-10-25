@@ -8,17 +8,14 @@ const STEPS = [
   {
     title: 'Sign up',
     body: 'An email address and your country. No card, no invite, nothing to approve.',
-    detail: 'You get one API key back.',
   },
   {
     title: 'Buy credits',
     body: 'Top up in naira, shillings or cedis with the payment methods you already use.',
-    detail: 'Your balance is held against your key.',
   },
   {
     title: 'Start using',
     body: 'Point any OpenAI-compatible tool at Rovie and pick a model.',
-    detail: 'Every model in the catalog, one key.',
   },
 ];
 
@@ -26,7 +23,6 @@ export function GetStartedSteps() {
   return (
     <section className={styles.steps} aria-labelledby="steps-heading">
       <div className={styles.head}>
-        <span className={styles.eyebrow}>Start with Route</span>
         <h2 id="steps-heading">Choose a model. Make your first call.</h2>
       </div>
 
@@ -39,7 +35,6 @@ export function GetStartedSteps() {
             <div className={styles.body}>
               <h3>{step.title}</h3>
               <p>{step.body}</p>
-              <p className={styles.detail}>{step.detail}</p>
             </div>
           </li>
         ))}

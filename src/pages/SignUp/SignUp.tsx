@@ -92,7 +92,6 @@ export function SignUp() {
   return (
     <AuthLayout
       title="Create your Route account"
-      subtitle="Get an API key, top up in your own currency, and call every model through one endpoint."
       footer={
         <>
           Already have an account? <Link to="/signin">Sign in</Link>
@@ -120,7 +119,6 @@ export function SignUp() {
               autoComplete="name"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              hint="Optional. Shown on your dashboard."
             />
 
             <Field
@@ -139,9 +137,9 @@ export function SignUp() {
               type="password"
               name="password"
               autoComplete="new-password"
+              placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              hint={`At least ${MIN_PASSWORD_LENGTH} characters.`}
               error={passwordTooShort ? `Use at least ${MIN_PASSWORD_LENGTH} characters.` : null}
               required
             />
@@ -150,9 +148,16 @@ export function SignUp() {
                 54 options with names to type, and every platform already
                 ships a good one. */}
             <div className={styles.field}>
-              <label className={styles.label} htmlFor="signup-country">
-                Country
-              </label>
+              <div className={styles.labelRow}>
+                <label className={styles.label} htmlFor="signup-country">
+                  Country
+                </label>
+                {currency && (
+                  <span className={styles.currencyTag}>
+                    billed in — {currency}
+                  </span>
+                )}
+              </div>
               <select
                 id="signup-country"
                 className={styles.select}
@@ -172,11 +177,6 @@ export function SignUp() {
                   </option>
                 ))}
               </select>
-              <p className={styles.hint}>
-                {currency
-                  ? `Sets the currency you're billed in — ${currency}. You can change it later.`
-                  : 'Sets the currency you’re billed in. You can change it later.'}
-              </p>
             </div>
 
             {error && <FormError>{error}</FormError>}

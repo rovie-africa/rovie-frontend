@@ -57,7 +57,7 @@ an account, a key or a prompt.
 
 ## Payments
 
-Top-up data goes to IvoryPay. Card numbers and bank credentials never reach
+Top-up data goes to Flutterwave. Card numbers and bank credentials never reach
 Rovie's servers — we receive a reference, an amount and a currency, and credit
 your balance when the payment is confirmed.
 

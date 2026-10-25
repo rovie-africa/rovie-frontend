@@ -72,7 +72,7 @@ export function CountrySelect({
           id={selectId}
           className={styles.select}
           value={value ?? ''}
-          aria-describedby={hintId}
+          aria-describedby={!quotesLocally && value !== null && fxRates ? hintId : undefined}
           onChange={(event) => onChange(event.target.value)}
         >
           {/* Shown until we have a country. Detection resolving to somewhere
@@ -120,26 +120,12 @@ export function CountrySelect({
         )}
       </div>
 
-      <p className={styles.hint} id={hintId}>
-        {!fxRates ? (
-          <>Fetching today&apos;s exchange rates…</>
-        ) : value === null ? (
-          <>
-            Prices are in US dollars until you pick a country. Billing is always in USD either
-            way.
-          </>
-        ) : quotesLocally ? (
-          <>
-            Converted from USD at today&apos;s rate
-            {isDetected ? ', based on where we think you are' : ''}. Billing is always in USD.
-          </>
-        ) : (
-          <>
-            We don&apos;t have a live rate for this country&apos;s currency, so prices stay in US
-            dollars rather than being guessed.
-          </>
-        )}
-      </p>
+      {!quotesLocally && value !== null && fxRates && (
+        <p className={styles.hint} id={hintId}>
+          We don&apos;t have a live rate for this country&apos;s currency, so prices stay in US
+          dollars rather than being guessed.
+        </p>
+      )}
     </div>
   );
 }

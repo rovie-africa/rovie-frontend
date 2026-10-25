@@ -8,17 +8,18 @@
 .head {
   display: flex;
   flex-direction: column;
-  gap: v.$space-3;
+  gap: v.$space-4;
   margin-bottom: v.$space-6;
-}
 
-.intro {
-  max-width: 40rem;
-  margin: 0;
+  @include m.respond-to('md') {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 
 .country {
-  padding-top: v.$space-2;
+  padding-top: 0;
 }
 
 .error {

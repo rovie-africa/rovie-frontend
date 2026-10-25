@@ -486,26 +486,17 @@ export interface TopUpOptions {
   /** Currencies a payment can actually be settled in - shorter than the list
    *  we can quote a balance in. */
   payableCurrencies: string[];
-  /** How the payer can send money. Bank transfer first - it's the accessible
-   *  option for most users, who have a bank account and no stablecoin. */
-  methods: PaymentMethod[];
   /**
-   * The floor per method - they genuinely differ. Stablecoin has a hard
-   * provider floor of ~$1.45; bank transfer has none, so Rovie's own policy
-   * minimum applies. Show the one for the selected method.
-   */
-  minUsdByMethod: Record<PaymentMethod, number>;
-  /**
-   * The same limits expressed in each payable currency, in minor units,
+   * The limits expressed in each payable currency, in minor units,
    * converted server-side. Preferred over the USD figures for display: a
    * currency may be missing here if its rate was briefly unavailable, in
    * which case fall back to USD rather than printing a wrong number.
    */
   limits: Record<
     string,
-    { minMinorByMethod: Record<PaymentMethod, number>; maxMinor: number }
+    { minMinor: number; maxMinor: number }
   >;
-  /** Rovie's own minimum, before any provider floor. */
+  /** Rovie's own minimum. */
   policyMinUsd: number;
   maxUsd: number;
 }
@@ -520,7 +511,6 @@ export interface TopUpQuote {
   /** Credit that would be added, after Rovie's markup. */
   creditUsd: number;
   markupPercent: number;
-  method: PaymentMethod;
   /** Always true: rates move, and the binding rate is the one locked when
    *  the charge is created. */
   indicative: boolean;
@@ -529,29 +519,21 @@ export interface TopUpQuote {
 export function quoteTopUp(input: {
   currency: string;
   amountMinor: number;
-  method: PaymentMethod;
 }): Promise<TopUpQuote> {
   return portalCall<TopUpQuote>('/me/top-up/quote', { method: 'POST', body: input });
 }
 
-/** How the payer sends the money, not how Rovie is settled. */
-export type PaymentMethod = 'bank' | 'crypto';
-
 export interface TopUpCharge {
-  /** IvoryPay's hosted checkout. Send the browser here. */
+  /** Flutterwave's hosted checkout. Send the browser here. */
   checkoutUrl: string;
   reference: string;
   creditUsd: number;
-  method: PaymentMethod;
-  /** What the payer is asked for, including the provider's fee. */
   amountInFiat?: number;
-  platformFeeInFiat?: number;
 }
 
 export function startTopUp(input: {
   currency: string;
   amountMinor: number;
-  method: PaymentMethod;
 }): Promise<TopUpCharge> {
   return portalCall<TopUpCharge>('/me/top-up', { method: 'POST', body: input });
 }

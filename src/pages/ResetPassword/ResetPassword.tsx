@@ -70,7 +70,6 @@ export function ResetPassword() {
     return (
       <AuthLayout
         title="This link has expired"
-        subtitle="Reset links last an hour and work once. Ask for a new one and it'll be in your inbox."
         footer={
           <>
             Remembered it? <Link to="/signin">Sign in</Link>
@@ -88,7 +87,6 @@ export function ResetPassword() {
   return (
     <AuthLayout
       title="Set a new password"
-      subtitle="Pick something you haven't used elsewhere. This signs you out everywhere else."
       footer={
         <>
           Remembered it? <Link to="/signin">Sign in</Link>
@@ -113,9 +111,9 @@ export function ResetPassword() {
               type="password"
               name="password"
               autoComplete="new-password"
+              placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              hint={`At least ${MIN_PASSWORD_LENGTH} characters.`}
               error={tooShort ? `Use at least ${MIN_PASSWORD_LENGTH} characters.` : null}
               required
             />

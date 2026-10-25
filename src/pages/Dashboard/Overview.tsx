@@ -105,21 +105,19 @@ export function Overview() {
               <Stat
                 label="Spent"
                 value={balance.data ? amount(balance.data.spendUsd, balance.data.spendLocal) : '—'}
-                note="All keys"
               />
               <Stat
                 label="Last 7 days"
                 value={usage.data?.totals ? money(usage.data.totals.spendUsd) : '—'}
                 note={
                   usage.data?.totals && usage.data.totals.requests > 0
-                    ? `${usage.data.totals.requests.toLocaleString()} requests`
+                    ? `${usage.data.totals.requests.toLocaleString()} reqs`
                     : undefined
                 }
               />
               <Stat
                 label="Active keys"
                 value={keys === null ? '—' : String(activeKeys.length)}
-                note={keys !== null && activeKeys.length === 0 ? 'Create one to start' : undefined}
               />
             </StatRow>
 
@@ -142,11 +140,15 @@ export function Overview() {
 
       <Card
         title="Connect to Rovie Route"
-        description="Rovie Route uses the OpenAI API format. Point any compatible client here and change nothing else."
         action={
-          <Button as={Link} to="/dashboard/keys" variant="secondary">
-            Manage keys
-          </Button>
+          <div className={styles.headerActions}>
+            <Button as={Link} to="/models" variant="secondary">
+              Models
+            </Button>
+            <Button as={Link} to="/dashboard/keys" variant="secondary">
+              Keys
+            </Button>
+          </div>
         }
       >
         <div className={styles.connect}>
@@ -156,23 +158,11 @@ export function Overview() {
             value={usage.data?.models[0]?.model ?? 'claude-sonnet-5'}
           />
           <CopyField
-            label="Test it"
+            label="Test request"
             multiline
             value={curlExample(config.litellmUrl, usage.data?.models[0]?.model ?? 'claude-sonnet-5')}
           />
         </div>
-
-        <p className={styles.hint}>
-          {firstActive ? (
-            <>
-              Use the key you saved when you created it. Lost it?{' '}
-              <Link to="/dashboard/keys">Rotate the key</Link> to get a new one.
-            </>
-          ) : (
-            <Link to="/dashboard/keys">Create your first key</Link>
-          )}{' '}
-          · <Link to="/models">Browse models and rates</Link>
-        </p>
       </Card>
 
       <Card title="Limits">

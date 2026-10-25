@@ -136,7 +136,6 @@ export function Home() {
 
       <section className={styles.purpose} aria-labelledby="purpose-heading">
         <div className={styles.purposeLead}>
-          <span className={styles.sectionEyebrow}>Our purpose</span>
           <h2 id="purpose-heading">Africa should help shape the future of AI.</h2>
         </div>
 
@@ -155,12 +154,7 @@ export function Home() {
 
       <section className={styles.products} aria-labelledby="products-heading">
         <div className={styles.sectionHead}>
-          <span className={styles.sectionEyebrow}>What we&apos;re building</span>
           <h2 id="products-heading">An AI company for Africa.</h2>
-          <p>
-            Rovie brings research, models, and infrastructure together so more people can use and
-            shape AI.
-          </p>
         </div>
 
         <ul className={styles.productList}>

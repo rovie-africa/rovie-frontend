@@ -124,14 +124,10 @@ export function Usage() {
         <>
           <Card title="Spend">
             <StatRow>
-              <Stat label="Spent" value={money(totals.spendUsd)} note={`Last ${windowDays} days`} />
+              <Stat label="Spent" value={money(totals.spendUsd)} />
               <Stat label="Requests" value={totals.requests.toLocaleString()} />
               <Stat label="Tokens" value={formatCompactNumber(totals.tokens)} />
-              <Stat
-                label="Failed"
-                value={totals.failedRequests.toLocaleString()}
-                note={totals.failedRequests > 0 ? 'See recent requests' : undefined}
-              />
+              <Stat label="Failed" value={totals.failedRequests.toLocaleString()} />
             </StatRow>
 
             {hasTraffic && (
@@ -168,10 +164,7 @@ export function Usage() {
             </Card>
           )}
 
-          <Card
-            title="By project"
-            description="Tag requests with an x-litellm-tags header to split spend by project."
-          >
+          <Card title="By project">
             {projectRows.length > 0 ? (
               <RankedBars
                 rows={projectRows}
@@ -181,18 +174,15 @@ export function Usage() {
                 itemNoun="projects"
               />
             ) : (
-              <Empty>
-                Nothing tagged yet. Send <code>x-litellm-tags: my-project</code> with a request and
-                it shows up here.
-              </Empty>
+              <Empty>Nothing tagged yet.</Empty>
             )}
           </Card>
 
           {data.sessions.sessions > 0 && (
             <Card title="Per session">
               <StatRow>
-                <Stat label="Typical session" value={money(data.sessions.medianSpendUsd)} note="Median" />
-                <Stat label="Expensive session" value={money(data.sessions.p90SpendUsd)} note="90th percentile" />
+                <Stat label="Median session" value={money(data.sessions.medianSpendUsd)} />
+                <Stat label="P90 session" value={money(data.sessions.p90SpendUsd)} />
                 <Stat label="Sessions" value={data.sessions.sessions.toLocaleString()} />
               </StatRow>
             </Card>
@@ -202,13 +192,13 @@ export function Usage() {
             <Card title="Cached input">
               <StatRow>
                 <Stat label="Cached tokens" value={formatCompactNumber(totals.cachedTokens)} />
-                <Stat label="Of your input" value={`${cacheShare}%`} note="Billed at the provider's cache rate" />
+                <Stat label="Cache share" value={`${cacheShare}%`} />
               </StatRow>
             </Card>
           )}
 
           {latencyRows.length > 0 && (
-            <Card title="Speed you got">
+            <Card title="Throughput">
               <RankedBars
                 rows={latencyRows}
                 valueLabel="Tokens/sec"

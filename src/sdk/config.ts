@@ -58,7 +58,7 @@ export const config: Config = {
     import.meta.env.VITE_IP_GEO_URL || 'https://get.geojs.io/v1/ip/geo.json',
 };
 
-// Currencies a top-up can be settled in - gated by IvoryPay and the
+// Currencies a top-up can be settled in - gated by Flutterwave and the
 // compliance work behind holding funds, so this is a business decision.
 // NOT the same as the currencies we can quote a price in: /fx/rates covers
 // every African currency the rate feed carries, which is what the map reads.

@@ -34,7 +34,7 @@ rate.
 - Prices are quoted in your local currency, converted from the provider's USD
   rate at the market rate current when the quote is shown.
 - The rate applied to a top-up is fixed at the moment the payment is confirmed.
-- Top-ups are processed by IvoryPay. Their terms apply to the payment itself.
+- Top-ups are processed by Flutterwave. Their terms apply to the payment itself.
 - Model costs are set by the providers who run the models. They can change, and
   a change takes effect for calls made after it.
 

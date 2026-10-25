@@ -47,10 +47,21 @@
   background-size: 12px 8px;
 }
 
-.hint {
-  margin: 0;
-  font-size: v.$font-size-sm;
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.$space-2;
+}
+
+.currencyBadge {
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-medium;
   color: v.$color-text-muted;
+  padding: 1px v.$space-2;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-sm;
+  background-color: v.$color-surface;
 }
 
 .details {

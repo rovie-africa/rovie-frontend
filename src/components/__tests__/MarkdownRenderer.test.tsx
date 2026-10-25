@@ -37,9 +37,9 @@ describe('MarkdownRenderer', () => {
   });
 
   it('renders an external link with target="_blank" and rel="noreferrer"', () => {
-    renderMarkdown('See [IvoryPay](https://ivorypay.io) for details.');
-    const link = screen.getByRole('link', { name: 'IvoryPay' });
-    expect(link).toHaveAttribute('href', 'https://ivorypay.io');
+    renderMarkdown('See [Flutterwave](https://flutterwave.com) for details.');
+    const link = screen.getByRole('link', { name: 'Flutterwave' });
+    expect(link).toHaveAttribute('href', 'https://flutterwave.com');
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noreferrer');
   });

@@ -79,10 +79,7 @@ export function DeleteAccount() {
 
   if (!open) {
     return (
-      <Card
-        title="Delete account"
-        description="Closes your account and revokes every API key. Unspent credit is not refunded."
-      >
+      <Card title="Delete account">
         <Button variant="danger" onClick={() => setOpen(true)}>
           Delete account
         </Button>
@@ -91,7 +88,7 @@ export function DeleteAccount() {
   }
 
   return (
-    <Card title="Delete account" description="Read this before confirming — it can't be undone.">
+    <Card title="Delete account">
       <div className={styles.panel}>
         {preview === null && !error && <p className={styles.checking}>Checking your account…</p>}
 

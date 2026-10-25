@@ -17,10 +17,12 @@
   margin-bottom: v.$space-5;
 }
 
-.eyebrow {
-  margin: 0 0 v.$space-2;
-  font-size: v.$font-size-sm;
-  color: v.$color-text-muted;
+.headerTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: v.$space-3;
 }
 
 .title {
@@ -29,6 +31,15 @@
   font-size: v.$font-size-xl;
   font-weight: 700;
   color: v.$color-text;
+}
+
+.userBadge {
+  font-size: v.$font-size-xs;
+  color: v.$color-text-muted;
+  padding: v.$space-1 v.$space-2;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-sm;
+  background-color: v.$color-surface;
 }
 
 .banner {

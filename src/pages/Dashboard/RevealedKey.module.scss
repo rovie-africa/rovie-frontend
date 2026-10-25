@@ -10,8 +10,16 @@
   background-color: color-mix(in srgb, v.$color-accent 9%, transparent);
 }
 
+.headingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.$space-3;
+  margin-bottom: v.$space-4;
+}
+
 .heading {
-  margin: 0 0 v.$space-2;
+  margin: 0;
   font-family: v.$font-family-display;
   font-size: v.$font-size-lg;
   font-weight: 700;
@@ -23,12 +31,16 @@
   }
 }
 
-.body {
-  margin: 0 0 v.$space-4;
-  max-width: 60ch;
-  font-size: v.$font-size-sm;
-  line-height: 1.6;
-  color: v.$color-text-muted;
+.onceBadge {
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-medium;
+  padding: 2px v.$space-2;
+  border-radius: v.$radius-pill;
+  background-color: color-mix(in srgb, v.$color-accent 20%, transparent);
+  border: 1px solid color-mix(in srgb, v.$color-accent 50%, transparent);
+  color: v.$color-text;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .keyRow {

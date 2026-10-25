@@ -47,15 +47,8 @@
   gap: v.$space-4;
 }
 
-.hint {
-  margin: v.$space-4 0 0;
-  font-size: v.$font-size-sm;
-  line-height: 1.6;
-  color: v.$color-text-muted;
-
-  a {
-    color: v.$color-primary;
-    font-weight: v.$font-weight-medium;
-    @include m.focus-ring;
-  }
+.headerActions {
+  display: flex;
+  gap: v.$space-2;
+  align-items: center;
 }

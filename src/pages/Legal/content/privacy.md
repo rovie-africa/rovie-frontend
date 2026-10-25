@@ -26,7 +26,7 @@ key, so the number we show you can be reconciled.
 cost, and when. This is what bills you correctly and what the
 [rankings](/rankings) are aggregated from. Rankings never identify an account.
 
-**Payment details.** Handled by IvoryPay, not by us. We receive a payment
+**Payment details.** Handled by Flutterwave, not by us. We receive a payment
 reference, an amount and a currency; we do not receive or store card numbers or
 bank credentials.
 
@@ -50,7 +50,7 @@ not sell personal data, and we do not share it for anyone else's marketing.
 
 - **Model providers** receive the contents of the requests we route to them.
   See [Data policy](/data-policy).
-- **IvoryPay** processes top-ups and receives what a payment needs.
+- **Flutterwave** processes top-ups and receives what a payment needs.
 - **Infrastructure providers** host the services; they hold data at rest on our
   behalf and do not use it for their own purposes.
 

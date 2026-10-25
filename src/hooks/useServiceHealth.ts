@@ -162,7 +162,7 @@ const UNMONITORED: Omit<ServiceCheck, 'samples'>[] = [
   {
     id: 'payments',
     name: 'Top-ups',
-    description: 'Payment initiation and settlement through IvoryPay.',
+    description: 'Payment initiation and settlement through Flutterwave.',
     state: 'unmonitored',
     latencyMs: null,
     detail: 'No public health endpoint to check from the browser.',

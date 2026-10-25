@@ -7,7 +7,7 @@ import { AFRICA_COUNTRIES, currencyForAlpha2 } from '../../lib/d3/africaCountrie
 import { rovie } from '../../sdk';
 import { RovieApiError } from '../../sdk/httpClient';
 import { messageForAuthError } from '../../lib/authErrors';
-import { Card } from './DashboardUi';
+import { Card, Tag } from './DashboardUi';
 import { DeleteAccount } from './DeleteAccount';
 import styles from './Account.module.scss';
 
@@ -57,10 +57,7 @@ function ChangePassword() {
   }
 
   return (
-    <Card
-      title="Password"
-      description="Changing it signs out every other device. This session stays."
-    >
+    <Card title="Password">
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.field}>
           <label className={styles.label} htmlFor="account-current-password">
@@ -88,10 +85,10 @@ function ChangePassword() {
             autoComplete="new-password"
             value={next}
             onChange={(event) => setNext(event.target.value)}
+            placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`}
             aria-invalid={tooShort ? true : undefined}
             required
           />
-          <p className={styles.hint}>At least {MIN_PASSWORD_LENGTH} characters.</p>
         </div>
 
         {error && <FormError>{error}</FormError>}
@@ -156,7 +153,7 @@ export function Account() {
 
   return (
     <>
-      <Card title="Route profile" description="Your country decides which currency Route prices and credit are quoted in.">
+      <Card title="Route profile">
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="account-name">
@@ -174,9 +171,12 @@ export function Account() {
           </div>
 
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="account-country">
-              Country
-            </label>
+            <div className={styles.labelRow}>
+              <label className={styles.label} htmlFor="account-country">
+                Country
+              </label>
+              {currency && <span className={styles.currencyBadge}>{currency}</span>}
+            </div>
             <select
               id="account-country"
               className={styles.select}
@@ -193,7 +193,6 @@ export function Account() {
                 </option>
               ))}
             </select>
-            {currency && <p className={styles.hint}>Billed in {currency}.</p>}
           </div>
 
           {error && <FormError>{error}</FormError>}
@@ -207,16 +206,18 @@ export function Account() {
         </form>
       </Card>
 
-      <Card title="Sign-in details" description="How you get into your Route account.">
+      <Card title="Sign-in details">
         <dl className={styles.details}>
           <div className={styles.detailRow}>
             <dt className={styles.term}>Email</dt>
             <dd className={styles.value}>{user?.email ?? 'Not set'}</dd>
           </div>
           <div className={styles.detailRow}>
-            <dt className={styles.term}>Email verified</dt>
+            <dt className={styles.term}>Email verification</dt>
             <dd className={styles.value}>
-              {user?.emailVerified ? 'Yes' : 'Not yet — sign-in still works'}
+              <Tag tone={user?.emailVerified ? 'success' : 'muted'}>
+                {user?.emailVerified ? 'Verified' : 'Unverified'}
+              </Tag>
             </dd>
           </div>
           <div className={styles.detailRow}>
@@ -230,7 +231,7 @@ export function Account() {
 
       <ChangePassword />
 
-      <Card title="Sign out" description="Ends this session on this device. Your keys keep working.">
+      <Card title="Sign out">
         <Button variant="secondary" onClick={handleSignOut}>
           Sign out
         </Button>

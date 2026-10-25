@@ -58,10 +58,8 @@ describe('Dashboard billing', () => {
     listPayments.mockResolvedValue({ payments: [] });
     getTopUpOptions.mockResolvedValue({
       payableCurrencies: ['NGN', 'UGX', 'GHS', 'KES'],
-      methods: ['bank', 'crypto'],
-      minUsdByMethod: { bank: 0.5, crypto: 1.45 },
       limits: {
-        NGN: { minMinorByMethod: { bank: 63161, crypto: 183165 }, maxMinor: 63160022 },
+        NGN: { minMinor: 63161, maxMinor: 63160022 },
       },
       policyMinUsd: 0.5,
       maxUsd: 500,
@@ -108,41 +106,28 @@ describe('Dashboard billing', () => {
     ).toBeInTheDocument();
   });
 
-  it('prices a top-up before taking any money', async () => {
-    const user = userEvent.setup();
-    quoteTopUp.mockResolvedValue({
-      currency: 'NGN',
-      amountMinor: 2000000,
-      creditUsd: 15.83,
-      markupPercent: 8,
-      method: 'bank',
-      indicative: true,
-    });
-
+  it('blocks top-ups until a country is picked', async () => {
+    getMe.mockResolvedValue({ user: { ...NG_USER, country: '' }, needsCountry: true });
     renderBilling();
-    await user.type(await screen.findByLabelText('Amount'), '20000');
 
-    await waitFor(() =>
-      expect(quoteTopUp).toHaveBeenCalledWith({ currency: 'NGN', amountMinor: 2000000, method: 'bank' })
-    );
-    expect(await screen.findByText('$15.83')).toBeInTheDocument();
+    // The form is replaced with a single link to the account page where
+    // country can be set.
+    expect(await screen.findByRole('link', { name: 'Set your country' })).toBeInTheDocument();
+    expect(screen.queryByLabelText('Amount')).not.toBeInTheDocument();
     expect(startTopUp).not.toHaveBeenCalled();
   });
 
-  it('will not submit until a quote has come back', async () => {
+  it('defaults the picker to the user’s home currency', async () => {
+    // Uganda user: picker should open on UGX, not NGN.
+    getMe.mockResolvedValue({ user: { ...NG_USER, country: 'UG' }, needsCountry: false });
     renderBilling();
-    await screen.findByLabelText('Amount');
-    expect(screen.getByRole('button', { name: 'Continue to payment' })).toBeDisabled();
-  });
 
-  it('defaults the currency to the user’s own when it is payable', async () => {
-    renderBilling();
     const select = (await screen.findByLabelText('Currency')) as HTMLSelectElement;
-    await waitFor(() => expect(select.value).toBe('NGN'));
+    await waitFor(() => expect(select.value).toBe('UGX'));
   });
 
-  it('falls back to a payable currency and explains why', async () => {
-    // South Africa: balance quotable in ZAR, but payments can't settle in it.
+  it('tells users whose home currency is not payable that they have to pick another', async () => {
+    // South Africa (ZAR) is supported for quotes but not yet payable.
     getMe.mockResolvedValue({ user: { ...NG_USER, country: 'ZA' }, needsCountry: false });
     getBalance.mockResolvedValue({
       availableUsd: 1,
@@ -163,31 +148,18 @@ describe('Dashboard billing', () => {
   });
 
   it('states the limits in the currency being paid in, not dollars', async () => {
-    const user = userEvent.setup();
     renderBilling();
 
     // ₦631.61 and ₦631,600.22 — the figures the amount box is denominated in.
-    // Both sit in one sentence split across text nodes, so assert on the
-    // element rather than on each fragment.
     const limits = await screen.findByText(/Minimum/);
     expect(limits.textContent).toMatch(/631\.61/);
     expect(limits.textContent).toMatch(/631,600/);
     expect(limits.textContent).not.toMatch(/\$0\.50/);
-
-    // The two floors genuinely differ, so one figure would mislead whichever
-    // method it didn't apply to.
-    await user.click(screen.getByRole('radio', { name: /Stablecoin/ }));
-    // ₦1,831.65 rounds UP to ₦1,832 for display: rounding a minimum down
-    // would print a figure the form rejects.
-    await waitFor(() => expect(screen.getByText(/Minimum/).textContent).toMatch(/1,832/));
-    expect(screen.getByText(/Minimum/).textContent).toMatch(/Bank transfers can be smaller/);
   });
 
   it('falls back to dollars when the server had no rate for that currency', async () => {
     getTopUpOptions.mockResolvedValue({
       payableCurrencies: ['NGN'],
-      methods: ['bank', 'crypto'],
-      minUsdByMethod: { bank: 0.5, crypto: 1.45 },
       limits: {}, // rate briefly unavailable
       policyMinUsd: 0.5,
       maxUsd: 500,
@@ -198,53 +170,24 @@ describe('Dashboard billing', () => {
     expect((await screen.findByText(/Minimum/)).textContent).toMatch(/\$0\.50/);
   });
 
-  it('re-prices when the method changes, since the floor moves with it', async () => {
+  it('re-prices as the amount changes', async () => {
     const user = userEvent.setup();
     quoteTopUp.mockResolvedValue({
-      currency: 'NGN', amountMinor: 70000, creditUsd: 0.55, markupPercent: 8, method: 'bank', indicative: true,
+      currency: 'NGN', amountMinor: 70000, creditUsd: 0.55, markupPercent: 8, indicative: true,
     });
 
     renderBilling();
     await user.type(await screen.findByLabelText('Amount'), '700');
     await waitFor(() =>
-      expect(quoteTopUp).toHaveBeenCalledWith({ currency: 'NGN', amountMinor: 70000, method: 'bank' })
+      expect(quoteTopUp).toHaveBeenCalledWith({ currency: 'NGN', amountMinor: 70000 })
     );
-
-    await user.click(screen.getByRole('radio', { name: /Stablecoin/ }));
-    // A stale quote from the other method must not survive the switch.
-    await waitFor(() =>
-      expect(quoteTopUp).toHaveBeenCalledWith({ currency: 'NGN', amountMinor: 70000, method: 'crypto' })
-    );
-  });
-
-  it('points at bank transfer when stablecoin is under its floor', async () => {
-    const user = userEvent.setup();
-    const { RovieApiError } = await import('../../sdk/httpClient');
-    quoteTopUp.mockRejectedValue(
-      new RovieApiError('failed', {
-        status: 400,
-        body: {
-          error: {
-            code: 'below_minimum',
-            message: "Stablecoin payments can't be less than about $1.45. Use a bank transfer for smaller amounts.",
-          },
-        },
-      })
-    );
-
-    renderBilling();
-    await user.click(await screen.findByRole('radio', { name: /Stablecoin/ }));
-    await user.type(screen.getByLabelText('Amount'), '700');
-
-    expect(await screen.findByText(/Use a bank transfer for smaller amounts/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Continue to payment' })).toBeDisabled();
   });
 
   it("passes the provider's own minimum through verbatim", async () => {
     const user = userEvent.setup();
     const { RovieApiError } = await import('../../sdk/httpClient');
     quoteTopUp.mockResolvedValue({
-      currency: 'UGX', amountMinor: 200000, creditUsd: 0.58, markupPercent: 8, method: 'bank', indicative: true,
+      currency: 'UGX', amountMinor: 200000, creditUsd: 0.58, markupPercent: 8, indicative: true,
     });
     startTopUp.mockRejectedValue(
       new RovieApiError('failed', {
@@ -258,8 +201,6 @@ describe('Dashboard billing', () => {
     await screen.findByText('$0.58');
     await user.click(screen.getByRole('button', { name: 'Continue to payment' }));
 
-    // Per-currency floors aren't modelled locally; IvoryPay names the exact
-    // figure and that is what the user should read.
     expect(await screen.findByRole('alert')).toHaveTextContent('7300UGX');
   });
 
@@ -270,11 +211,10 @@ describe('Dashboard billing', () => {
       amountMinor: 2000000,
       creditUsd: 15.83,
       markupPercent: 8,
-      method: 'bank',
       indicative: true,
     });
     startTopUp.mockResolvedValue({
-      checkoutUrl: 'https://checkout.ivorypay.io/api/abc',
+      checkoutUrl: 'https://checkout.flutterwave.com/v3/hosted/pay/abc',
       reference: 'abc',
       creditUsd: 15.83,
     });
@@ -286,47 +226,22 @@ describe('Dashboard billing', () => {
     expect(screen.getByRole('button', { name: 'Continue to payment' })).toBeEnabled();
   });
 
-  it('defaults to bank transfer, not crypto', async () => {
+  it('initiates a top-up with Flutterwave', async () => {
     const user = userEvent.setup();
     quoteTopUp.mockResolvedValue({
-      currency: 'NGN', amountMinor: 500000, creditUsd: 3.96, markupPercent: 8, method: 'bank', indicative: true,
+      currency: 'NGN', amountMinor: 500000, creditUsd: 3.96, markupPercent: 8, indicative: true,
     });
     startTopUp.mockResolvedValue({
-      checkoutUrl: 'https://checkout.ivorypay.io/api/abc', reference: 'abc', creditUsd: 3.96, method: 'bank',
+      checkoutUrl: 'https://checkout.flutterwave.com/v3/hosted/pay/abc', reference: 'abc', creditUsd: 3.96,
     });
 
     renderBilling();
-    // Crypto-only was the reason top-ups looked unusable to someone with a
-    // bank account and no stablecoin.
-    const bank = (await screen.findByRole('radio', { name: /Bank transfer/ })) as HTMLInputElement;
-    expect(bank.checked).toBe(true);
-
-    await user.type(screen.getByLabelText('Amount'), '5000');
+    await user.type(await screen.findByLabelText('Amount'), '5000');
     await screen.findByText('$3.96');
     await user.click(screen.getByRole('button', { name: 'Continue to payment' }));
 
     await waitFor(() =>
-      expect(startTopUp).toHaveBeenCalledWith({ currency: 'NGN', amountMinor: 500000, method: 'bank' })
-    );
-  });
-
-  it('sends the crypto method when that is chosen', async () => {
-    const user = userEvent.setup();
-    quoteTopUp.mockResolvedValue({
-      currency: 'NGN', amountMinor: 500000, creditUsd: 3.96, markupPercent: 8, method: 'bank', indicative: true,
-    });
-    startTopUp.mockResolvedValue({
-      checkoutUrl: 'https://checkout.ivorypay.io/api/abc', reference: 'abc', creditUsd: 3.96, method: 'crypto',
-    });
-
-    renderBilling();
-    await user.click(await screen.findByRole('radio', { name: /Stablecoin/ }));
-    await user.type(screen.getByLabelText('Amount'), '5000');
-    await screen.findByText('$3.96');
-    await user.click(screen.getByRole('button', { name: 'Continue to payment' }));
-
-    await waitFor(() =>
-      expect(startTopUp).toHaveBeenCalledWith({ currency: 'NGN', amountMinor: 500000, method: 'crypto' })
+      expect(startTopUp).toHaveBeenCalledWith({ currency: 'NGN', amountMinor: 500000 })
     );
   });
 
@@ -334,7 +249,7 @@ describe('Dashboard billing', () => {
     const user = userEvent.setup();
     listPayments.mockResolvedValue({
       payments: [{
-        id: 'p1', provider: 'ivorypay', currency: 'NGN', amountMinor: '500000',
+        id: 'p1', provider: 'flutterwave', currency: 'NGN', amountMinor: '500000',
         usdCreditedMicros: null, status: 'pending',
         createdAt: new Date().toISOString(), confirmedAt: null,
       }],
@@ -352,7 +267,7 @@ describe('Dashboard billing', () => {
     const user = userEvent.setup();
     listPayments.mockResolvedValue({
       payments: [{
-        id: 'p1', provider: 'ivorypay', currency: 'NGN', amountMinor: '500000',
+        id: 'p1', provider: 'flutterwave', currency: 'NGN', amountMinor: '500000',
         usdCreditedMicros: null, status: 'pending',
         createdAt: new Date().toISOString(), confirmedAt: null,
       }],
@@ -368,7 +283,7 @@ describe('Dashboard billing', () => {
   it('offers no check on a settled payment', async () => {
     listPayments.mockResolvedValue({
       payments: [{
-        id: 'p1', provider: 'ivorypay', currency: 'NGN', amountMinor: '500000',
+        id: 'p1', provider: 'flutterwave', currency: 'NGN', amountMinor: '500000',
         usdCreditedMicros: '3958200', status: 'success',
         createdAt: new Date().toISOString(), confirmedAt: new Date().toISOString(),
       }],
@@ -389,7 +304,6 @@ describe('Dashboard billing', () => {
       amountMinor: 2000000,
       creditUsd: 15.83,
       markupPercent: 8,
-      method: 'bank',
       indicative: true,
     });
     startTopUp.mockRejectedValue(
@@ -412,7 +326,7 @@ describe('Dashboard billing', () => {
       payments: [
         {
           id: 'p1',
-          provider: 'ivorypay',
+          provider: 'flutterwave',
           currency: 'NGN',
           amountMinor: '2000000',
           usdCreditedMicros: null,
