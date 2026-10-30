@@ -18,6 +18,7 @@ import { LEGAL_DOCS } from '../../pages/Legal/Legal';
 const ROUTED_PATHS = [
   '/',
   '/code',
+  '/code/download',
   '/research',
   '/models',
   '/rankings',

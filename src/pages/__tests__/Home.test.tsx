@@ -69,16 +69,16 @@ describe('Home page', () => {
     expect(sections[2]).toMatch(/the work behind rovie/i);
   });
 
-  it('introduces Route as the active product and keeps future work clearly labelled', () => {
+  it('introduces Route and Code as active products and keeps future work clearly labelled', () => {
     renderHome();
     const products = screen.getByRole('region', { name: /an ai company for africa/i });
     expect(products).toHaveTextContent(/rovie route/i);
-    expect(products).toHaveTextContent(/available now/i);
     expect(products).toHaveTextContent(/rovie code/i);
+    expect(products).toHaveTextContent(/available now/i);
     expect(products).toHaveTextContent(/rovie research/i);
     expect(products).toHaveTextContent(/in development/i);
     expect(screen.getByRole('link', { name: /explore rovie route/i })).toHaveAttribute('href', ROUTE_URL);
-    expect(screen.getByRole('link', { name: /about rovie code/i })).toHaveAttribute('href', '/code');
+    expect(screen.getByRole('link', { name: /explore rovie code/i })).toHaveAttribute('href', '/code');
     expect(screen.getByRole('link', { name: /our research/i })).toHaveAttribute('href', '/research');
   });
 

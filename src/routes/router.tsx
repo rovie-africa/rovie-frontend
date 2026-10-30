@@ -24,6 +24,9 @@ import { DOCS_URL, ROUTE_URL } from '../content/navLinks';
 // -----------------------------------------------------------------------
 const Models = lazy(() => import('../pages/Models/Models').then((m) => ({ default: m.Models })));
 const Code = lazy(() => import('../pages/Code/Code').then((m) => ({ default: m.Code })));
+const Download = lazy(() =>
+  import('../pages/Download/Download').then((m) => ({ default: m.Download }))
+);
 const Research = lazy(() =>
   import('../pages/Research/Research').then((m) => ({ default: m.Research }))
 );
@@ -52,6 +55,8 @@ export function AppRoutes(): React.JSX.Element {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/code" element={<Code />} />
+        <Route path="/code/download" element={<Download />} />
+        <Route path="/download" element={<Navigate to="/code/download" replace />} />
         <Route path="/research" element={<Research />} />
         <Route path="/models" element={<Models />} />
         <Route path="/rankings" element={<Rankings />} />

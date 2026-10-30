@@ -76,7 +76,7 @@ export const PRODUCT_NAV: readonly NavLink[] = [
     to: '/code',
     label: 'Code',
     longLabel: 'Rovie Code',
-    description: 'A focused workflow for AI coding agents',
+    description: 'AI coding companion across desktop, web, and terminal',
   },
   {
     to: '/research',

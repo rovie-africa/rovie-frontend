@@ -1,31 +1,494 @@
+import { useState, useCallback } from 'react';
+import { CODE_SURFACES, type Surface } from '../../content/codeSurfaces';
 import { ROUTE_URL } from '../../content/navLinks';
+import {
+  ROVIE_CODE_VERSION,
+  RELEASE_BASE_URL,
+  EXTENSION_DOWNLOAD,
+  EXTENSION_VARIANTS,
+  CLI_INSTALL_COMMANDS,
+  DOWNLOAD_FAQS,
+} from '../../content/downloads';
+import {
+  AppleIcon,
+  WindowsIcon,
+  LinuxIcon,
+  VSCodeIcon,
+  CursorIcon,
+  WindsurfIcon,
+  VSCodiumIcon,
+  CopyIcon,
+  CheckIcon,
+  PlusIcon,
+  MinusIcon,
+} from '../Download/DownloadIcons';
 import styles from './Code.module.scss';
 
 export function Code() {
+  const [activeSurfaceId, setActiveSurfaceId] = useState<Surface['id']>('desktop');
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [openFaqId, setOpenFaqId] = useState<string | null>(null);
+
+  const activeSurface =
+    CODE_SURFACES.find((s) => s.id === activeSurfaceId) ?? CODE_SURFACES[0];
+
+  const handleCopy = useCallback((text: string, key: string) => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      void navigator.clipboard.writeText(text);
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(null), 2000);
+    }
+  }, []);
+
   return (
     <main className={styles.page}>
+      {/* Hero */}
       <header className={styles.hero}>
-        <span className={styles.eyebrow}>A Rovie product · In development</span>
+        <div className={styles.heroMeta}>
+          <span className={styles.versionBadge}>{ROVIE_CODE_VERSION}</span>
+        </div>
         <h1>Rovie Code</h1>
-        <p>
-          A home for AI coding agents: the models, project context, and developer tools they need,
-          brought into one focused workflow.
+        <p className={styles.heroLead}>
+          An AI coding companion across desktop, web, terminal, and your editor. Connected to
+          32 frontier models through Rovie Route, with project context and live local-currency
+          wallet tracking.
         </p>
+        <div className={styles.heroActions}>
+          <a href="#download" className={styles.primaryAction}>
+            Download
+          </a>
+          <a href={ROUTE_URL} className={styles.secondaryAction}>
+            Explore Rovie Route
+          </a>
+        </div>
       </header>
 
-      <section className={styles.promise} aria-labelledby="code-promise-heading">
-        <h2 id="code-promise-heading">Agents should understand the work they are joining.</h2>
-        <p>
-          Rovie Code is being designed for developers who want AI agents to work with their code,
-          not around it. It will begin with tools such as OpenCode and grow into a more capable
-          environment for choosing models, carrying context, and moving work forward.
-        </p>
+      {/* Surface Workbench Showcase */}
+      <section id="interfaces" className={styles.showcase} aria-labelledby="surfaces-heading">
+        <h2 id="surfaces-heading" className={styles.srOnly}>
+          Rovie Code Interfaces
+        </h2>
+        <div className={styles.showcaseFrame}>
+          {/* Surface Selector Tabs */}
+          <div className={styles.surfaceTabs} role="tablist" aria-label="Available interfaces">
+            {CODE_SURFACES.map((surface) => {
+              const isSelected = surface.id === activeSurface.id;
+              return (
+                <button
+                  key={surface.id}
+                  id={`tab-${surface.id}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={isSelected}
+                  aria-controls={`panel-${surface.id}`}
+                  className={`${styles.surfaceTab} ${isSelected ? styles.surfaceTabActive : ''}`}
+                  onClick={() => setActiveSurfaceId(surface.id)}
+                >
+                  <span className={styles.tabName}>{surface.name}</span>
+                  <span className={styles.tabBadge}>{surface.badge}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Active Surface Viewport */}
+          <div
+            id={`panel-${activeSurface.id}`}
+            role="tabpanel"
+            aria-labelledby={`tab-${activeSurface.id}`}
+            className={styles.stage}
+          >
+            <div className={styles.stageBar}>
+              <div className={styles.stageInfo}>
+                <h3>{activeSurface.title}</h3>
+                <p>{activeSurface.summary}</p>
+              </div>
+            </div>
+
+            <div className={styles.screenFrame}>
+              <picture>
+                <source type="image/webp" srcSet={activeSurface.webp} />
+                <img
+                  src={activeSurface.png}
+                  alt={activeSurface.alt}
+                  width={activeSurface.width}
+                  height={activeSurface.height}
+                  loading="eager"
+                  decoding="async"
+                  className={styles.screenshot}
+                />
+              </picture>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className={styles.next} aria-labelledby="code-next-heading">
-        <span className={styles.eyebrow}>Available today</span>
-        <h2 id="code-next-heading">Build with Rovie Route while Code is in development.</h2>
-        <a href={ROUTE_URL} className={styles.action}>
+      {/* Downloads Section (Terminal, Desktop, Extensions, FAQ) */}
+      <div id="download" className={styles.downloadsBlock}>
+        {/* Section 1: Terminal */}
+        <section className={styles.downloadSection} aria-labelledby="terminal-section-heading">
+          <div id="terminal-section-heading" className={styles.sectionLabel}>
+            <span>[1]</span> Rovie Code Terminal
+          </div>
+          <div className={styles.sectionContent}>
+            <button
+              type="button"
+              className={styles.cliRow}
+              onClick={() => handleCopy(CLI_INSTALL_COMMANDS.script, 'cli-script')}
+              aria-label="Copy quick install script"
+            >
+              <code>
+                curl -fsSL https://code.rovie.africa/<strong>install</strong> | bash
+              </code>
+              <span
+                className={`${styles.copyStatus} ${
+                  copiedKey === 'cli-script' ? styles.copied : ''
+                }`}
+              >
+                {copiedKey === 'cli-script' ? <CheckIcon /> : <CopyIcon />}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className={styles.cliRow}
+              onClick={() => handleCopy(CLI_INSTALL_COMMANDS.npm, 'cli-npm')}
+              aria-label="Copy npm install command"
+            >
+              <code>
+                npm install -g <strong>rovie-code</strong>
+              </code>
+              <span
+                className={`${styles.copyStatus} ${
+                  copiedKey === 'cli-npm' ? styles.copied : ''
+                }`}
+              >
+                {copiedKey === 'cli-npm' ? <CheckIcon /> : <CopyIcon />}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className={styles.cliRow}
+              onClick={() => handleCopy(CLI_INSTALL_COMMANDS.bun, 'cli-bun')}
+              aria-label="Copy bun install command"
+            >
+              <code>
+                bun install -g --trust <strong>rovie-code</strong>
+              </code>
+              <span
+                className={`${styles.copyStatus} ${
+                  copiedKey === 'cli-bun' ? styles.copied : ''
+                }`}
+              >
+                {copiedKey === 'cli-bun' ? <CheckIcon /> : <CopyIcon />}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className={styles.cliRow}
+              onClick={() => handleCopy(CLI_INSTALL_COMMANDS.brew, 'cli-brew')}
+              aria-label="Copy homebrew install command"
+            >
+              <code>
+                brew install <strong>rovie-africa/tap/rovie-code</strong>
+              </code>
+              <span
+                className={`${styles.copyStatus} ${
+                  copiedKey === 'cli-brew' ? styles.copied : ''
+                }`}
+              >
+                {copiedKey === 'cli-brew' ? <CheckIcon /> : <CopyIcon />}
+              </span>
+            </button>
+          </div>
+        </section>
+
+        {/* Section 2: Desktop */}
+        <section className={styles.downloadSection} aria-labelledby="desktop-section-heading">
+          <div id="desktop-section-heading" className={styles.sectionLabel}>
+            <span>[2]</span> Rovie Code Desktop
+          </div>
+          <div className={styles.sectionContent}>
+            {/* macOS */}
+            <h3 className={styles.platformGroupHeading}>macOS</h3>
+            <div className={styles.downloadRow}>
+              <div className={styles.downloadInfo}>
+                <span className={styles.iconWrap}>
+                  <AppleIcon />
+                </span>
+                <div className={styles.labelWrap}>
+                  <span className={styles.platformName}>macOS (Apple Silicon)</span>
+                  <span className={styles.subMeta}>DMG · 323 MB</span>
+                </div>
+              </div>
+              <a
+                href={`${RELEASE_BASE_URL}/rovie-code-desktop-mac-arm64.dmg`}
+                className={styles.actionButton}
+                aria-label="Download for macOS (Apple Silicon)"
+                download
+              >
+                Download
+              </a>
+            </div>
+
+            <div className={styles.downloadRow}>
+              <div className={styles.downloadInfo}>
+                <span className={styles.iconWrap}>
+                  <AppleIcon />
+                </span>
+                <div className={styles.labelWrap}>
+                  <span className={styles.platformName}>macOS (Intel)</span>
+                  <span className={styles.subMeta}>DMG · 335 MB</span>
+                </div>
+              </div>
+              <a
+                href={`${RELEASE_BASE_URL}/rovie-code-desktop-mac-x64.dmg`}
+                className={styles.actionButton}
+                aria-label="Download for macOS (Intel)"
+                download
+              >
+                Download
+              </a>
+            </div>
+
+            {/* Windows */}
+            <h3 className={styles.platformGroupHeading}>Windows</h3>
+            <div className={styles.downloadRow}>
+              <div className={styles.downloadInfo}>
+                <span className={styles.iconWrap}>
+                  <WindowsIcon />
+                </span>
+                <div className={styles.labelWrap}>
+                  <span className={styles.platformName}>Windows (x64)</span>
+                  <span className={styles.subMeta}>EXE · 259 MB</span>
+                </div>
+              </div>
+              <a
+                href={`${RELEASE_BASE_URL}/rovie-code-desktop-win-x64.exe`}
+                className={styles.actionButton}
+                aria-label="Download for Windows (Windows x64)"
+                download
+              >
+                Download
+              </a>
+            </div>
+
+            <div className={styles.downloadRow}>
+              <div className={styles.downloadInfo}>
+                <span className={styles.iconWrap}>
+                  <WindowsIcon />
+                </span>
+                <div className={styles.labelWrap}>
+                  <span className={styles.platformName}>Windows (ARM64)</span>
+                  <span className={styles.subMeta}>EXE · 246 MB</span>
+                </div>
+              </div>
+              <a
+                href={`${RELEASE_BASE_URL}/rovie-code-desktop-win-arm64.exe`}
+                className={styles.actionButton}
+                aria-label="Download for Windows (Windows ARM64)"
+                download
+              >
+                Download
+              </a>
+            </div>
+
+            {/* Linux */}
+            <h3 className={styles.platformGroupHeading}>Linux</h3>
+            <div className={styles.downloadRow}>
+              <div className={styles.downloadInfo}>
+                <span className={styles.iconWrap}>
+                  <LinuxIcon />
+                </span>
+                <div className={styles.labelWrap}>
+                  <span className={styles.platformName}>Linux (.deb)</span>
+                  <span className={styles.subMeta}>Debian / Ubuntu · 241 MB</span>
+                </div>
+              </div>
+              <a
+                href={`${RELEASE_BASE_URL}/rovie-code-desktop-linux-amd64.deb`}
+                className={styles.actionButton}
+                aria-label="Download for Linux (Debian / Ubuntu)"
+                download
+              >
+                Download
+              </a>
+            </div>
+
+            <div className={styles.downloadRow}>
+              <div className={styles.downloadInfo}>
+                <span className={styles.iconWrap}>
+                  <LinuxIcon />
+                </span>
+                <div className={styles.labelWrap}>
+                  <span className={styles.platformName}>Linux (.rpm)</span>
+                  <span className={styles.subMeta}>Fedora / RHEL · 213 MB</span>
+                </div>
+              </div>
+              <a
+                href={`${RELEASE_BASE_URL}/rovie-code-desktop-linux-x86_64.rpm`}
+                className={styles.actionButton}
+                aria-label="Download for Linux (Fedora / RHEL)"
+                download
+              >
+                Download
+              </a>
+            </div>
+
+            <div className={styles.downloadRow}>
+              <div className={styles.downloadInfo}>
+                <span className={styles.iconWrap}>
+                  <LinuxIcon />
+                </span>
+                <div className={styles.labelWrap}>
+                  <span className={styles.platformName}>Linux (.AppImage)</span>
+                  <span className={styles.subMeta}>Universal · 303 MB</span>
+                </div>
+              </div>
+              <a
+                href={`${RELEASE_BASE_URL}/rovie-code-desktop-linux-x86_64.AppImage`}
+                className={styles.actionButton}
+                aria-label="Download for Linux (Universal AppImage)"
+                download
+              >
+                Download
+              </a>
+            </div>
+
+            {/* Cask CLI install */}
+            <button
+              type="button"
+              className={styles.cliRow}
+              onClick={() =>
+                handleCopy('brew install --cask rovie-code-desktop', 'desktop-cask')
+              }
+              aria-label="Copy desktop brew install command"
+            >
+              <code>
+                brew install --cask <strong>rovie-code-desktop</strong>
+              </code>
+              <span
+                className={`${styles.copyStatus} ${
+                  copiedKey === 'desktop-cask' ? styles.copied : ''
+                }`}
+              >
+                {copiedKey === 'desktop-cask' ? <CheckIcon /> : <CopyIcon />}
+              </span>
+            </button>
+          </div>
+        </section>
+
+        {/* Section 3: Extensions */}
+        <section className={styles.downloadSection} aria-labelledby="extensions-section-heading">
+          <div id="extensions-section-heading" className={styles.sectionLabel}>
+            <span>[3]</span> Rovie Code Extensions
+          </div>
+          <div className={styles.sectionContent}>
+            <h3 className={styles.platformGroupHeading}>VS Code & Cursor</h3>
+            {EXTENSION_VARIANTS.map((ext) => (
+              <div key={ext.id} className={styles.downloadRow}>
+                <div className={styles.downloadInfo}>
+                  <span className={styles.iconWrap}>
+                    {ext.id === 'vscode' && <VSCodeIcon />}
+                    {ext.id === 'cursor' && <CursorIcon />}
+                    {ext.id === 'windsurf' && <WindsurfIcon />}
+                    {ext.id === 'vscodium' && <VSCodiumIcon />}
+                  </span>
+                  <span className={styles.platformName}>{ext.name}</span>
+                </div>
+                <button
+                  type="button"
+                  className={styles.actionButton}
+                  onClick={() => handleCopy(ext.command, ext.id)}
+                  aria-label={`Copy ${ext.name} install command`}
+                >
+                  {copiedKey === ext.id ? 'Copied' : 'Install'}
+                </button>
+              </div>
+            ))}
+
+            {/* Direct VSIX Download */}
+            <div className={styles.downloadRow}>
+              <div className={styles.downloadInfo}>
+                <span className={styles.iconWrap}>
+                  <VSCodeIcon />
+                </span>
+                <div className={styles.labelWrap}>
+                  <span className={styles.platformName}>Direct Extension VSIX</span>
+                  <span className={styles.subMeta}>v2.2.0 · {EXTENSION_DOWNLOAD.size}</span>
+                </div>
+              </div>
+              <a
+                href={EXTENSION_DOWNLOAD.vsixUrl}
+                className={styles.actionButton}
+                aria-label="Download VSIX"
+                download
+              >
+                Download VSIX
+              </a>
+            </div>
+
+            {/* Editor install CLI Command */}
+            <button
+              type="button"
+              className={styles.cliRow}
+              onClick={() => handleCopy(EXTENSION_DOWNLOAD.command, 'extension-cli')}
+              aria-label="Copy editor install command"
+            >
+              <code>
+                code --install-extension <strong>rovie-code</strong>
+              </code>
+              <span
+                className={`${styles.copyStatus} ${
+                  copiedKey === 'extension-cli' ? styles.copied : ''
+                }`}
+              >
+                {copiedKey === 'extension-cli' ? <CheckIcon /> : <CopyIcon />}
+              </span>
+            </button>
+          </div>
+        </section>
+
+        {/* Section 4: FAQ */}
+        <section className={styles.faqSection} aria-labelledby="faq-title">
+          <h2 id="faq-title" className={styles.faqTitle}>
+            FAQ
+          </h2>
+          <ul className={styles.faqList}>
+            {DOWNLOAD_FAQS.map((faq) => {
+              const isOpen = openFaqId === faq.id;
+              return (
+                <li key={faq.id} className={styles.faqItem}>
+                  <button
+                    type="button"
+                    className={styles.faqQuestion}
+                    aria-expanded={isOpen}
+                    aria-controls={`faq-answer-${faq.id}`}
+                    onClick={() => setOpenFaqId(isOpen ? null : faq.id)}
+                  >
+                    <span className={styles.faqIcon}>
+                      {isOpen ? <MinusIcon /> : <PlusIcon />}
+                    </span>
+                    <span className={styles.faqQuestionText}>{faq.question}</span>
+                  </button>
+                  {isOpen && (
+                    <div id={`faq-answer-${faq.id}`} className={styles.faqAnswer}>
+                      {faq.answer}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      </div>
+
+      {/* Next Step */}
+      <section className={styles.next} aria-labelledby="next-heading">
+        <h2 id="next-heading">Get your API key on Rovie Route.</h2>
+        <a href={ROUTE_URL} className={styles.nextAction}>
           Explore Rovie Route <span aria-hidden="true">→</span>
         </a>
       </section>

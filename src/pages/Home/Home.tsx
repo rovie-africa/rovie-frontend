@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { AfricaMapLazy } from '../../components/AfricaMap/AfricaMapLazy';
 import type { MapModelTag } from '../../components/AfricaMap/AfricaMapSvg';
 import { useFxRates } from '../../hooks/useFxRates';
@@ -35,10 +34,10 @@ const PRODUCTS = [
   },
   {
     name: 'Rovie Code',
-    status: 'In development',
+    status: 'Available now',
     description:
-      'A home for AI coding agents, bringing the models, project context, and developer tools they need into one focused workflow.',
-    action: 'About Rovie Code',
+      'A home for AI coding agents in your terminal—pre-wired to Rovie Route with 32 frontier models, project context, and live local-currency wallet tracking.',
+    action: 'Explore Rovie Code',
     to: '/code',
   },
   {

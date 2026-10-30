@@ -63,7 +63,13 @@ export const ROUTE_SEO: readonly RouteSeo[] = [
     path: '/code',
     title: 'Rovie Code',
     description:
-      'Rovie Code is a home for AI coding agents, bringing models, project context and developer tools into one focused workflow.',
+      'AI coding agent across desktop, web, terminal, and editor—pre-wired to Rovie Route with 32 models, project context, and live local-currency wallet tracking.',
+  },
+  {
+    path: '/code/download',
+    title: 'Download Rovie Code',
+    description:
+      'Download Rovie Code desktop applications, editor extensions, and command-line tools for macOS, Windows, and Linux.',
   },
   {
     path: '/research',
