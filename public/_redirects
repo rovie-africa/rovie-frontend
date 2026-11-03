@@ -30,6 +30,10 @@
 /sdk                https://docs.rovie.africa/sdks/overview/   301!
 
 # ----------------------------------------------------------- portal-api proxy
+# Frontend SPA route for mobile auth callback must come before the API proxy
+/auth/mobile   /index.html   200
+/auth/mobile/* /index.html   200
+
 # Netlify rewrites API routes to Fly.io portal-api for route.rovie.africa
 /auth/*        https://rovie-portal-api.fly.dev/auth/:splat        200!
 /auth-config   https://rovie-portal-api.fly.dev/auth-config        200!
