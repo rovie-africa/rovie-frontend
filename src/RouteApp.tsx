@@ -6,6 +6,7 @@ import { Models } from './pages/Models/Models';
 import { SignIn } from './pages/SignIn/SignIn';
 import { SignUp } from './pages/SignUp/SignUp';
 import { ResetPassword } from './pages/ResetPassword/ResetPassword';
+import { MobileAuth } from './pages/Auth/MobileAuth';
 import { DashboardLayout } from './pages/Dashboard/DashboardLayout';
 import { Overview } from './pages/Dashboard/Overview';
 import { Usage } from './pages/Dashboard/Usage';
@@ -35,6 +36,7 @@ export function RouteApp() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/auth/mobile" element={<MobileAuth />} />
           <Route
             path="/dashboard"
             element={
