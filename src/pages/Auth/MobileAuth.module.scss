@@ -1,0 +1,50 @@
+@use '../../styles/abstracts/variables' as v;
+@use '../../styles/abstracts/mixins' as m;
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-4;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-4;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-2;
+}
+
+.label {
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-medium;
+  color: v.$color-text;
+}
+
+.select {
+  width: 100%;
+  padding: 11px 38px 11px 14px;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-input;
+  background-color: v.$color-bg;
+  color: v.$color-text;
+  font-family: inherit;
+  font-size: v.$font-size-base;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%23888' stroke-width='1.6' d='M1 1.5 6 6.5l5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 12px 8px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus {
+    outline: none;
+    border-color: v.$color-primary;
+    box-shadow: 0 0 0 2px v.$color-primary;
+  }
+}
+
