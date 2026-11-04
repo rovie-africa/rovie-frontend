@@ -41,26 +41,37 @@ export function MobileAuth() {
   async function authorize() {
     setStatus('authorizing');
     setErrorMessage(null);
-    try {
-      const result = await rovie.portal.createApiKey('Rovie Mobile');
-      setApiKey(result.apiKey);
-      setStatus('success');
 
-      const redirectUrl = `rovie://auth?key=${encodeURIComponent(result.apiKey)}`;
-      window.location.href = redirectUrl;
-
+    let attempts = 0;
+    while (attempts < 3) {
       try {
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = redirectUrl;
-        document.body.appendChild(iframe);
-      } catch {
-        // Ignore DOM exceptions
+        const result = await rovie.portal.createApiKey('Rovie Mobile');
+        setApiKey(result.apiKey);
+        setStatus('success');
+
+        const redirectUrl = `rovie://auth?key=${encodeURIComponent(result.apiKey)}`;
+        window.location.href = redirectUrl;
+
+        try {
+          const iframe = document.createElement('iframe');
+          iframe.style.display = 'none';
+          iframe.src = redirectUrl;
+          document.body.appendChild(iframe);
+        } catch {
+          // Ignore DOM exceptions
+        }
+        return;
+      } catch (err: unknown) {
+        attempts++;
+        if (attempts >= 3) {
+          setStatus('error');
+          const msg = err instanceof Error ? err.message : 'Could not generate mobile access key.';
+          setErrorMessage(msg);
+        } else {
+          // Cold start retry delay
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+        }
       }
-    } catch (err: unknown) {
-      setStatus('error');
-      const msg = err instanceof Error ? err.message : 'Could not generate mobile access key.';
-      setErrorMessage(msg);
     }
   }
 
