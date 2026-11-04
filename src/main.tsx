@@ -20,6 +20,7 @@ import '@fontsource/ibm-plex-mono/700.css';
 import '@fontsource/ibm-plex-mono/400-italic.css';
 import './styles/main.scss';
 import App from './App';
+import { isRouteTarget } from './lib/appTarget';
 
 // The two applications share the same UI source while being served as
 // different products. `dev:route` supplies this build-time target and runs on
@@ -27,7 +28,7 @@ import App from './App';
 // The Route app is lazy specifically so the umbrella bundle never has to
 // download its auth and dashboard screens.
 const RouteApp = lazy(() => import('./RouteApp').then((module) => ({ default: module.RouteApp })));
-const isRouteApp = import.meta.env.VITE_APP_TARGET === 'route';
+const isRouteApp = isRouteTarget();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
