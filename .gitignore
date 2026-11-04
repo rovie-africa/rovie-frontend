@@ -43,3 +43,4 @@ docs/.starlight-links-validator
 
 # Local Netlify folder
 .netlify
+*.tsbuildinfo

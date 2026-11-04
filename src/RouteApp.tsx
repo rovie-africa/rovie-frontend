@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { RequireAuth } from './components/RequireAuth/RequireAuth';
-import { RouteProduct } from './pages/Route/Route';
+import { RouteHome } from './components/RouteHome/RouteHome';
 import { Models } from './pages/Models/Models';
 import { SignIn } from './pages/SignIn/SignIn';
 import { SignUp } from './pages/SignUp/SignUp';
@@ -31,7 +31,7 @@ export function RouteApp() {
         <RouteProductSeo />
         <RouteChrome>
           <Routes>
-          <Route path="/" element={<RouteProduct />} />
+          <Route path="/" element={<RouteHome />} />
           <Route path="/models" element={<Models />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { AuthLayout } from '../../components/AuthLayout/AuthLayout';
 import { Button } from '../../components/Button/Button';
 import { Field, FormError, FormNotice, SocialAuth } from '../../components/AuthForm/AuthForm';
@@ -8,6 +8,7 @@ import { useAuthMethods } from '../../hooks/useAuthMethods';
 import { useVisitorCountry } from '../../hooks/useVisitorCountry';
 import { AFRICA_COUNTRIES, currencyForAlpha2 } from '../../lib/d3/africaCountries';
 import { messageForAuthError } from '../../lib/authErrors';
+import { messageForOAuthError, safeNext } from '../../lib/authReturn';
 import { rovie } from '../../sdk';
 import styles from './SignUp.module.scss';
 
@@ -15,6 +16,8 @@ const MIN_PASSWORD_LENGTH = 12; // matches portal-api's emailAndPassword.minPass
 
 export function SignUp() {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const next = safeNext(params.get('next'));
   const { isSignedIn, isLoading, refresh } = useAuth();
   const methods = useAuthMethods();
   const { country: detected } = useVisitorCountry();
@@ -25,12 +28,12 @@ export function SignUp() {
   const [country, setCountry] = useState('');
   const [touchedCountry, setTouchedCountry] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(() => messageForOAuthError(params.get('error')));
   const [linkSent, setLinkSent] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && isSignedIn) navigate('/dashboard', { replace: true });
-  }, [isLoading, isSignedIn, navigate]);
+    if (!isLoading && isSignedIn) navigate(next, { replace: true });
+  }, [isLoading, isSignedIn, navigate, next]);
 
   // Pre-fill from the IP lookup, but stop the moment the user touches the
   // field - re-applying detection over a deliberate choice is the bug that
@@ -61,7 +64,7 @@ export function SignUp() {
         country,
       });
       await refresh();
-      navigate('/dashboard', { replace: true });
+      navigate(next, { replace: true });
     } catch (err) {
       setError(messageForAuthError(err));
     } finally {
@@ -79,7 +82,7 @@ export function SignUp() {
     try {
       await rovie.portal.sendMagicLink({
         email: email.trim(),
-        callbackURL: `${window.location.origin}/dashboard`,
+        callbackURL: `${window.location.origin}${next}`,
       });
       setLinkSent(true);
     } catch (err) {
@@ -94,14 +97,18 @@ export function SignUp() {
       title="Create your Route account"
       footer={
         <>
-          Already have an account? <Link to="/signin">Sign in</Link>
+          Already have an account?{' '}
+          <Link to={next === '/dashboard' ? '/signin' : `/signin?next=${encodeURIComponent(next)}`}>
+            Sign in
+          </Link>
         </>
       }
     >
       <div className={styles.stack}>
         <SocialAuth
           methods={methods.data}
-          callbackURL={`${window.location.origin}/dashboard`}
+          callbackURL={`${window.location.origin}${next}`}
+          errorCallbackURL={`${window.location.origin}/signup?${new URLSearchParams({ next }).toString()}`}
           disabled={submitting}
         />
 

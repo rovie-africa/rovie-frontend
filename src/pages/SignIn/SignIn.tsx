@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useAuthMethods } from '../../hooks/useAuthMethods';
 import { rovie } from '../../sdk';
 import { messageForAuthError } from '../../lib/authErrors';
+import { clearAuthNext, messageForOAuthError, safeNext, signInPath } from '../../lib/authReturn';
 import styles from './SignIn.module.scss';
 
 /**
@@ -38,18 +39,20 @@ export function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(() => messageForOAuthError(params.get('error')));
   const [linkSent, setLinkSent] = useState(false);
   const [resetSent, setResetSent] = useState(false);
 
   // Where to land after signing in: back where they were sent from, or the
   // dashboard. Only same-origin paths are honoured, so `?next=` can't be used
   // to bounce someone to another site off the back of a Rovie sign-in.
-  const rawNext = params.get('next');
-  const next = rawNext && rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/dashboard';
+  const next = safeNext(params.get('next'));
 
   useEffect(() => {
-    if (!isLoading && isSignedIn) navigate(next, { replace: true });
+    if (!isLoading && isSignedIn) {
+      clearAuthNext();
+      navigate(next, { replace: true });
+    }
   }, [isLoading, isSignedIn, navigate, next]);
 
   async function handlePasswordSubmit(event: React.FormEvent) {
@@ -130,7 +133,10 @@ export function SignIn() {
       subtitle={heading.subtitle}
       footer={
         <>
-          No account yet? <Link to="/signup">Create one</Link>
+          No account yet?{' '}
+          <Link to={next === '/dashboard' ? '/signup' : `/signup?next=${encodeURIComponent(next)}`}>
+            Create one
+          </Link>
         </>
       }
     >
@@ -142,6 +148,7 @@ export function SignIn() {
           <SocialAuth
             methods={methods.data}
             callbackURL={`${window.location.origin}${next}`}
+            errorCallbackURL={`${window.location.origin}${signInPath(next)}`}
             disabled={submitting}
           />
         )}

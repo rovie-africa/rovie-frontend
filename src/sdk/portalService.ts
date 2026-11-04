@@ -215,10 +215,21 @@ export function changePassword(input: {
 export async function initiateSocialSignIn(
   provider: SocialProvider,
   callbackURL: string,
+  errorCallbackURL?: string,
 ): Promise<string> {
   const result = await portalCall<{ url?: string; redirect?: boolean }>(
     '/auth/sign-in/social',
-    { method: 'POST', body: { provider, callbackURL } },
+    {
+      method: 'POST',
+      body: {
+        provider,
+        callbackURL,
+        // New OAuth accounts would otherwise go to Better Auth's default
+        // new-user URL rather than where the visitor was headed.
+        newUserCallbackURL: callbackURL,
+        ...(errorCallbackURL ? { errorCallbackURL } : {}),
+      },
+    },
   );
   if (!result.url) {
     throw new Error(`Social sign-in for ${provider} did not return a redirect URL.`);

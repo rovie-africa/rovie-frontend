@@ -1,6 +1,7 @@
 import { useId, useState, type InputHTMLAttributes, type ReactNode } from 'react';
 import { rovie } from '../../sdk';
 import type { AuthMethods, SocialProvider } from '../../sdk';
+import { rememberAuthNext } from '../../lib/authReturn';
 import styles from './AuthForm.module.scss';
 
 /**
@@ -154,11 +155,14 @@ export function SocialButton({
 export function SocialAuth({
   methods,
   callbackURL,
+  errorCallbackURL,
   disabled,
 }: {
   methods: AuthMethods | null;
   /** Absolute URL portal-api sends the browser back to once the provider returns. */
   callbackURL: string;
+  /** Absolute URL portal-api sends the browser to when the provider round trip fails. */
+  errorCallbackURL?: string;
   disabled?: boolean;
 }) {
   const available = PROVIDER_ORDER.filter((provider) => methods?.[provider]);
@@ -172,7 +176,11 @@ export function SocialAuth({
     try {
       // Better Auth v1 social sign-in is a POST that returns the provider
       // authorization URL. Navigate only once we have that URL.
-      const url = await rovie.portal.initiateSocialSignIn(provider, callbackURL);
+      // Remembered so a failure that loses the OAuth state (and with it
+      // errorCallbackURL) can still hand the visitor back to this flow.
+      const target = new URL(callbackURL);
+      rememberAuthNext(target.pathname + target.search);
+      const url = await rovie.portal.initiateSocialSignIn(provider, callbackURL, errorCallbackURL);
       window.location.href = url;
     } catch {
       // Navigation failed — reset so the user can try again.
