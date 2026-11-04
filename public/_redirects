@@ -41,6 +41,7 @@
 /me/*          https://rovie-portal-api.fly.dev/me/:splat          200!
 /keys          https://rovie-portal-api.fly.dev/keys              200!
 /keys/*        https://rovie-portal-api.fly.dev/keys/:splat        200!
+/key/*         https://rovie-portal-api.fly.dev/key/:splat         200!
 /billing/*     https://rovie-portal-api.fly.dev/billing/:splat     200!
 /top-up/*      https://rovie-portal-api.fly.dev/top-up/:splat      200!
 
