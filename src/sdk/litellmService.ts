@@ -40,7 +40,7 @@ export interface HealthCheckOptions {
 export function healthCheck({ signal }: HealthCheckOptions = {}): Promise<unknown> {
   return apiCall({
     baseUrl: config.litellmUrl,
-    path: '/health/readiness',
+    path: '/health/ready',
     signal,
   });
 }

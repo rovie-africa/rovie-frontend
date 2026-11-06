@@ -101,15 +101,17 @@ const PROBES: Probe[] = [
     name: 'Model gateway',
     description: 'The OpenAI-compatible endpoint your calls go through.',
     run: async (signal) => {
-      // The one purpose-built health check we have: /health/readiness, no auth.
+      // Unauthenticated readiness check on the Rust gateway (/health/ready).
       const result = (await rovie.litellm.healthCheck({ signal })) as {
         status?: string;
         db?: string;
+        database?: string;
       } | null;
-      if (result?.status && result.status !== 'healthy') {
+      if (result?.status && result.status !== 'healthy' && result.status !== 'ok') {
         throw new MalformedResponseError(`Gateway reported "${result.status}"`);
       }
-      return result?.db ? `Database ${result.db}` : null;
+      const dbStatus = result?.db ?? result?.database;
+      return dbStatus ? `Database ${dbStatus}` : null;
     },
   },
   {
